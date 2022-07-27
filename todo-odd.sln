@@ -1,0 +1,28 @@
+﻿
+Microsoft Visual Studio Solution File, Format Version 12.00
+# Visual Studio Version 16
+VisualStudioVersion = 16.0.30114.105
+MinimumVisualStudioVersion = 10.0.40219.1
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "todo-odd", "src\todo-odd.csproj", "{D02D1495-1EDD-4F61-BA8A-3E8A23C5398D}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "tests", "tests\tests.csproj", "{27974FA5-1B5A-4C08-B7FD-9689C43EAC1B}"
+EndProject
+Global
+	GlobalSection(SolutionConfigurationPlatforms) = preSolution
+		Debug|Any CPU = Debug|Any CPU
+		Release|Any CPU = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(SolutionProperties) = preSolution
+		HideSolutionNode = FALSE
+	EndGlobalSection
+	GlobalSection(ProjectConfigurationPlatforms) = postSolution
+		{D02D1495-1EDD-4F61-BA8A-3E8A23C5398D}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{D02D1495-1EDD-4F61-BA8A-3E8A23C5398D}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{D02D1495-1EDD-4F61-BA8A-3E8A23C5398D}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{D02D1495-1EDD-4F61-BA8A-3E8A23C5398D}.Release|Any CPU.Build.0 = Release|Any CPU
+		{27974FA5-1B5A-4C08-B7FD-9689C43EAC1B}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{27974FA5-1B5A-4C08-B7FD-9689C43EAC1B}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{27974FA5-1B5A-4C08-B7FD-9689C43EAC1B}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{27974FA5-1B5A-4C08-B7FD-9689C43EAC1B}.Release|Any CPU.Build.0 = Release|Any CPU
+	EndGlobalSection
+EndGlobal
