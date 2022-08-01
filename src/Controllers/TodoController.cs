@@ -20,6 +20,10 @@ public class TodoController : ControllerBase
             Description = item.Description
         };
         _context.TodoItems.Add(todoItem);
+        
+        using var span = ActivityHelper.Source.StartActivity("save-todo");
+        span?.AddTag("todo.title", item.Title);
+
         _context.SaveChanges();
         return Ok(new {
             id = todoItem.Id

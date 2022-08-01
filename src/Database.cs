@@ -6,15 +6,15 @@ public class TodoDbContext : DbContext
 {
     public TodoDbContext(DbContextOptions<TodoDbContext> options)
         : base(options)
-        {
+    {
 
-        }
+    }
 
-        public DbSet<TodoItem> TodoItems { get; set; }
-        protected override void OnModelCreating(ModelBuilder modelBuilder)
-        {
-            modelBuilder.Entity<TodoItem>().ToTable("TodoItem");
-        }
+    public DbSet<TodoItem> TodoItems { get; set; }
+    protected override void OnModelCreating(ModelBuilder modelBuilder)
+    {
+        modelBuilder.Entity<TodoItem>().ToTable("TodoItem");
+    }
 }
 
 public class TodoItem
