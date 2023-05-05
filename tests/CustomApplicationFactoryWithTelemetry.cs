@@ -31,7 +31,7 @@ public class CustomApplicationFactoryWithTelemetry : WebApplicationFactory<Progr
             .AddSource(TestTracerName)
             .AddSource(ActivityHelper.Source.Name)
             .AddProcessor(new TestRunSpanProcessor())
-            .SetResourceBuilder(ResourceBuilder.CreateDefault().AddService(TestTracerName))
+            .ConfigureResource(r => r.AddService(TestTracerName))
             .AddAspNetCoreInstrumentation()
             .AddInMemoryExporter(spans)
             .AddHoneycomb(honeycombOption)
@@ -57,6 +57,7 @@ public class CustomApplicationFactoryWithTelemetry : WebApplicationFactory<Progr
 
     public override ValueTask DisposeAsync()
     {
+        _tracerProvider.ForceFlush();
         _tracerProvider.Dispose();
         return base.DisposeAsync();
     }

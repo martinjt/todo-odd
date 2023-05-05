@@ -43,7 +43,7 @@ public class TodoController : ControllerBase
     }
 
     [HttpGet]
-    public async Task<ActionResult<List<TodoItem>>> GetAll()
+    public ActionResult<List<TodoItem>> GetAll()
     {
         return _context.TodoItems.ToList();
     }
