@@ -22,13 +22,14 @@ public class TodoListController : ControllerBase
         if (_memoryCache.TryGetValue<List<TodoItem>>(todoListKey, out var todoList))
             return todoList;
 
-        using var span = ActivityHelper.Source.StartActivity("get-todo-list-from-db");
+        using (var span = ActivityHelper.Source.StartActivity("get-todo-list-from-db"))
+        {
+            var allTodos = _context.TodoItems.ToList();
 
-        var allTodos = _context.TodoItems.ToList();
+            _memoryCache.Set(todoListKey, allTodos);
 
-        _memoryCache.Set(todoListKey, allTodos);
-
-        return allTodos;
+            return allTodos;
+        }
     }
 
 }

@@ -81,10 +81,57 @@ public class TodoAdminTestsWithODD : TodoAdminBaseTest, IAsyncLifetime
         Assert.NotNull(cacheActivity);
     }
 
+    [Fact]
+    public async Task GetTodos_FirstCall_CallsTheDatabase_V3()
+    {
+        var getAll = await _api.GetAsync("todo-list");
+
+        CollectedSpans.HasSpanWithName("get-todo-list-from-db");
+    }
+
+
+    [Fact]
+    public async Task GetTodos_AsyncBatching_IsParallel()
+    {
+        var getAll = await _api.GetAsync("todo-list");
+
+        var rootSpan = CollectedSpans.WithName("start-get")
+            .FirstOrDefault();
+        var processingSpans = CollectedSpans.WithName("get-from-db");
+
+        foreach (var span in processingSpans)
+            Assert.Equal(span.ParentId, rootSpan.Id);
+    }
+
     public async Task DisposeAsync()
     {
         TestSpan.End();
         await _webApp.DisposeAsync();
     }
+
 }
 
+public static class AssertSpan
+{
+    public static void HasSpanWithName(this List<Activity> activities, string Name)
+    {
+        var foundActivity = activities.FirstOrDefault(
+            a =>
+                a.DisplayName.Contains(Name));
+        Assert.NotNull(foundActivity);
+    }
+    public static void DoesNotSpanWithName(this List<Activity> activities, string Name)
+    {
+        var foundActivity = activities.FirstOrDefault(
+            a =>
+                a.DisplayName.Contains(Name));
+        Assert.Null(foundActivity);
+    }
+
+    public static IEnumerable<Activity> WithName(this List<Activity> activities, string Name)
+    {
+        return  activities.Where(
+            a =>
+                a.DisplayName.Contains(Name));
+    }
+}
