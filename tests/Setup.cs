@@ -4,7 +4,7 @@ using OpenTelemetry.Trace;
 using PracticalOtel.xUnit.OpenTelemetry;
 using Xunit.Abstractions;
 
-[assembly: TestFramework("PracticalOtel.xUnit.OpenTelemetry.Tests.OtelTestFramework", "PracticalOtel.xUnit.OpenTelemetry.Tests")]
+[assembly: TestFramework("todo_odd.Tests.OtelTestFramework", "tests")]
 
 namespace todo_odd.Tests;
 
