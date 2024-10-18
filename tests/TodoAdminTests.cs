@@ -1,7 +1,7 @@
 using System.Net.Http.Json;
 using Microsoft.AspNetCore.Mvc.Testing;
 
-namespace tests;
+namespace todo_odd.Tests;
 
 public class TodoAdminTests : TodoAdminBaseTest
 {

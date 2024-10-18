@@ -3,10 +3,9 @@ using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.Mvc.Testing;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
-using todo_odd;
 using Microsoft.EntityFrameworkCore;
 
-namespace tests;
+namespace todo_odd.Tests;
 
 public abstract class TodoAdminBaseTest
 {
