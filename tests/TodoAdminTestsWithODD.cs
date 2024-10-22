@@ -1,7 +1,5 @@
 using System.Diagnostics;
-using OpenTelemetry.Trace;
 using System.Net.Http.Json;
-using System.Runtime.CompilerServices;
 
 namespace todo_odd.Tests;
 
@@ -12,7 +10,7 @@ public class TodoAdminTestsWithODD : TodoAdminBaseTest, IAsyncLifetime
 
     public Task InitializeAsync()
     {
-        OtelTestFramework.CollectedSpans.RemoveAll(x => true);
+        OtelTestFramework.CollectedSpans.RemoveAllSpansForTest();
         return Task.CompletedTask;
     }
 
@@ -43,7 +41,7 @@ public class TodoAdminTestsWithODD : TodoAdminBaseTest, IAsyncLifetime
     public async Task GetTodos_WithCachedData_DoesNotCallDatabase()
     {
         var getAll = await _api.GetFromJsonAsync<List<TodoItem>>("todo-list");
-        OtelTestFramework.CollectedSpans.RemoveAll(x => true);
+        OtelTestFramework.CollectedSpans.RemoveAllSpansForTest();
 
         var getAllCached = await _api.GetFromJsonAsync<List<TodoItem>>("todo-list");
 
@@ -77,7 +75,7 @@ public class TodoAdminTestsWithODD : TodoAdminBaseTest, IAsyncLifetime
     {
         var getAll = await _api.GetAsync("todo-list");
 
-        OtelTestFramework.CollectedSpans.HasSpanWithName("get-todo-list-from-db");
+        OtelTestFramework.CollectedSpans.SpanExistsWithName("get-todo-list-from-db");
     }
 
 
@@ -86,9 +84,9 @@ public class TodoAdminTestsWithODD : TodoAdminBaseTest, IAsyncLifetime
     {
         var getAll = await _api.GetAsync("todo-list");
 
-        var rootSpan = OtelTestFramework.CollectedSpans.WithName("start-get")
+        var rootSpan = OtelTestFramework.CollectedSpans.GetSpanByName("start-get")
             .FirstOrDefault();
-        var processingSpans = OtelTestFramework.CollectedSpans.WithName("get-from-db");
+        var processingSpans = OtelTestFramework.CollectedSpans.GetSpanByName("get-from-db");
 
         foreach (var span in processingSpans)
             Assert.Equal(span.ParentId, rootSpan.Id);

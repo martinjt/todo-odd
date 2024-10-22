@@ -36,7 +36,7 @@ public class CustomApplicationFactoryWithInMemoryDb : WebApplicationFactory<Prog
         builder.ConfigureServices(sp => {
             sp.Remove(sp.Single(s => s.ServiceType == typeof(DbContextOptions<TodoDbContext>)));
             sp.Remove(sp.Single(s => s.ServiceType == typeof(TodoDbContext)));
-            sp.AddSingleton<TodoDbContext>(new TodoDbContext(
+            sp.AddSingleton(new TodoDbContext(
                 new DbContextOptionsBuilder<TodoDbContext>()
                     .UseInMemoryDatabase(Guid.NewGuid().ToString()).Options));
         });

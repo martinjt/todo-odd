@@ -1,4 +1,3 @@
-using System.Diagnostics;
 using OpenTelemetry.Resources;
 using OpenTelemetry.Trace;
 using PracticalOtel.xUnit.OpenTelemetry;
@@ -10,7 +9,7 @@ namespace todo_odd.Tests;
 
 public class OtelTestFramework : TracedTestFramework
 {
-    public static readonly List<Activity> CollectedSpans = [];
+    public static readonly InMemoryTestSpans CollectedSpans = [];        
     public OtelTestFramework(IMessageSink messageSink) : base(messageSink)
     {
         traceProviderSetup = tpb => {
