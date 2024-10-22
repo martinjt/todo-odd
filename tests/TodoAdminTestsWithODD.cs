@@ -1,34 +1,26 @@
 using System.Diagnostics;
-using OpenTelemetry.Trace;
 using System.Net.Http.Json;
-using System.Runtime.CompilerServices;
 
-namespace tests;
+namespace todo_odd.Tests;
 
 public class TodoAdminTestsWithODD : TodoAdminBaseTest, IAsyncLifetime
 {
     private CustomApplicationFactoryWithTelemetry _webApp;
     private HttpClient _api;
 
-    private static readonly List<Activity> CollectedSpans = new List<Activity>();
-    private TelemetrySpan TestSpan;
-
-    public void RecordTestName([CallerMemberName]string functionName = null!) => TestSpan.UpdateName($"Test: {functionName}");
     public Task InitializeAsync()
     {
-        CollectedSpans.RemoveAll(x => true);
+        OtelTestFramework.CollectedSpans.RemoveAllSpansForTest();
         return Task.CompletedTask;
     }
 
     public TodoAdminTestsWithODD() : base()
     {
-        _webApp = new CustomApplicationFactoryWithTelemetry(CollectedSpans);
+        _webApp = new CustomApplicationFactoryWithTelemetry();
         _api = _webApp.CreateClient();
 
-        TestSpan = _webApp.TestTracer.StartRootSpan("Test started");
-
         _api.DefaultRequestHeaders.Add("traceparent", 
-            $"00-{TestSpan.Context.TraceId.ToString()}-{TestSpan.Context.SpanId.ToString()}-01");
+            $"00-{Activity.Current?.TraceId}-{Activity.Current?.SpanId.ToString()}-01");
     }
 
     [Fact]
@@ -36,7 +28,7 @@ public class TodoAdminTestsWithODD : TodoAdminBaseTest, IAsyncLifetime
     {
         var addResponse = await CreateValidToDoItem(_api);
 
-        var saveActivity = CollectedSpans.FirstOrDefault(
+        var saveActivity = OtelTestFramework.CollectedSpans.FirstOrDefault(
             a => a.DisplayName.Contains("save-todo"));
         Assert.NotNull(saveActivity);
 
@@ -48,13 +40,12 @@ public class TodoAdminTestsWithODD : TodoAdminBaseTest, IAsyncLifetime
     [Fact]
     public async Task GetTodos_WithCachedData_DoesNotCallDatabase()
     {
-        RecordTestName();
         var getAll = await _api.GetFromJsonAsync<List<TodoItem>>("todo-list");
-        CollectedSpans.RemoveAll(x => true);
+        OtelTestFramework.CollectedSpans.RemoveAllSpansForTest();
 
         var getAllCached = await _api.GetFromJsonAsync<List<TodoItem>>("todo-list");
 
-        var cacheActivity = CollectedSpans.FirstOrDefault(
+        var cacheActivity = OtelTestFramework.CollectedSpans.FirstOrDefault(
             a =>
                 a.DisplayName.Contains("get-todo-list-from-db"));
         Assert.Null(cacheActivity);
@@ -63,7 +54,6 @@ public class TodoAdminTestsWithODD : TodoAdminBaseTest, IAsyncLifetime
     [Fact]
     public async Task GetTodos_FirstCall_CallsTheDatabase()
     {
-        RecordTestName();
         var getAll = await _api.GetAsync("todo-list");
 
         // ???
@@ -72,10 +62,9 @@ public class TodoAdminTestsWithODD : TodoAdminBaseTest, IAsyncLifetime
     [Fact]
     public async Task GetTodos_FirstCall_CallsTheDatabase_V2()
     {
-        RecordTestName();
         var getAll = await _api.GetAsync("todo-list");
 
-        var cacheActivity = CollectedSpans.FirstOrDefault(
+        var cacheActivity = OtelTestFramework.CollectedSpans.FirstOrDefault(
             a =>
                 a.DisplayName.Contains("get-todo-list-from-db"));
         Assert.NotNull(cacheActivity);
@@ -86,7 +75,7 @@ public class TodoAdminTestsWithODD : TodoAdminBaseTest, IAsyncLifetime
     {
         var getAll = await _api.GetAsync("todo-list");
 
-        CollectedSpans.HasSpanWithName("get-todo-list-from-db");
+        OtelTestFramework.CollectedSpans.SpanExistsWithName("get-todo-list-from-db");
     }
 
 
@@ -95,9 +84,9 @@ public class TodoAdminTestsWithODD : TodoAdminBaseTest, IAsyncLifetime
     {
         var getAll = await _api.GetAsync("todo-list");
 
-        var rootSpan = CollectedSpans.WithName("start-get")
+        var rootSpan = OtelTestFramework.CollectedSpans.GetSpanByName("start-get")
             .FirstOrDefault();
-        var processingSpans = CollectedSpans.WithName("get-from-db");
+        var processingSpans = OtelTestFramework.CollectedSpans.GetSpanByName("get-from-db");
 
         foreach (var span in processingSpans)
             Assert.Equal(span.ParentId, rootSpan.Id);
@@ -105,7 +94,6 @@ public class TodoAdminTestsWithODD : TodoAdminBaseTest, IAsyncLifetime
 
     public async Task DisposeAsync()
     {
-        TestSpan.End();
         await _webApp.DisposeAsync();
     }
 

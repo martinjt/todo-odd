@@ -3,10 +3,9 @@ using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.Mvc.Testing;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
-using todo_odd;
 using Microsoft.EntityFrameworkCore;
 
-namespace tests;
+namespace todo_odd.Tests;
 
 public abstract class TodoAdminBaseTest
 {
@@ -37,7 +36,7 @@ public class CustomApplicationFactoryWithInMemoryDb : WebApplicationFactory<Prog
         builder.ConfigureServices(sp => {
             sp.Remove(sp.Single(s => s.ServiceType == typeof(DbContextOptions<TodoDbContext>)));
             sp.Remove(sp.Single(s => s.ServiceType == typeof(TodoDbContext)));
-            sp.AddSingleton<TodoDbContext>(new TodoDbContext(
+            sp.AddSingleton(new TodoDbContext(
                 new DbContextOptionsBuilder<TodoDbContext>()
                     .UseInMemoryDatabase(Guid.NewGuid().ToString()).Options));
         });

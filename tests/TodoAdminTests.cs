@@ -1,7 +1,8 @@
 using System.Net.Http.Json;
 using Microsoft.AspNetCore.Mvc.Testing;
+using OpenTelemetry;
 
-namespace tests;
+namespace todo_odd.Tests;
 
 public class TodoAdminTests : TodoAdminBaseTest
 {
@@ -20,6 +21,7 @@ public class TodoAdminTests : TodoAdminBaseTest
     [Fact]
     public async Task AddTodo_WithValidRequest_ReturnsOk()
     {
+        using var scope = SuppressInstrumentationScope.Begin();
         var webapp = new CustomApplicationFactoryWithInMemoryDb();
         var client = webapp.CreateClient();
         var addResponse = await client.PostAsJsonAsync("todo", new { 
@@ -33,6 +35,7 @@ public class TodoAdminTests : TodoAdminBaseTest
     [Fact]
     public async Task AddTodo_WithValidRequest_ReturnsOk_V2()
     {
+        using var scope = SuppressInstrumentationScope.Begin();
         var addResponse = await _api.PostAsJsonAsync("todo", new
         {
             title = "New Todo",
@@ -45,6 +48,7 @@ public class TodoAdminTests : TodoAdminBaseTest
     [Fact]
     public async Task AddTodo_WithValidRequest_ReturnsOk_V3()
     {
+        using var scope = SuppressInstrumentationScope.Begin();
         var todoItem = new
         {
             title = "New Todo",
@@ -59,6 +63,7 @@ public class TodoAdminTests : TodoAdminBaseTest
     [Fact]
     public async Task AddTodo_WithValidRequest_ReturnsOk_V4()
     {
+        using var scope = SuppressInstrumentationScope.Begin();
         var validTodoItem = GetValidTodo();
 
         var addResponse = await _api.PostAsJsonAsync("todo", validTodoItem);
@@ -69,6 +74,7 @@ public class TodoAdminTests : TodoAdminBaseTest
     [Fact]
     public async Task AddTodo_WithValidRequest_HasValidId()
     {
+        using var scope = SuppressInstrumentationScope.Begin();
         var validTodoItem = GetValidTodo();
 
         var response = await _api.PostAsJsonAsync("todo", validTodoItem);
@@ -81,6 +87,7 @@ public class TodoAdminTests : TodoAdminBaseTest
     [Fact]
     public async Task AddTodo_WithValidRequest_CanBeRetrievedById()
     {
+        using var scope = SuppressInstrumentationScope.Begin();
         var todoItemId = await CreateValidToDoItem(_api);
 
         var todoItem = await _api.GetFromJsonAsync<TodoItem>($"todo/{todoItemId}");
